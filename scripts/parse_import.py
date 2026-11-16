@@ -17,6 +17,14 @@ import html as html_mod
 import json
 import os
 import re
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+import ocr  # noqa: E402
+
+# 图片扩展名（走 OCR）
+IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".webp", ".heic", ".bmp", ".tiff", ".gif"}
 
 # 常见「时间 发送人: 内容」行格式
 LINE_PATTERNS = [
@@ -41,6 +49,36 @@ def _parse_datetime(s: str) -> int | None:
 
 def _clean(s: str) -> str:
     return html_mod.unescape(s).strip()
+
+
+# OCR 截图常见「名字：内容」无时间戳格式
+_OCR_NAME_LINE = re.compile(r"^([^：:]{1,30})[：:]\s*(.*)$")
+
+
+def parse_ocr_text(text: str, self_name: str, target_name: str) -> list[dict]:
+    """解析 OCR 出的截图文本（通常无时间戳，只有「名字：内容」）。
+
+    说话人按名字匹配 self/target，匹配不上标记 unknown（交给 LLM 进一步识别）。
+    """
+    msgs = []
+    for line in text.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        m = _OCR_NAME_LINE.match(line)
+        if m:
+            name = _clean(m.group(1))
+            content = _clean(m.group(2))
+            if name in (self_name, "我"):
+                sender = self_name
+            elif name == target_name:
+                sender = target_name
+            else:
+                sender = "unknown"
+        else:
+            name, content, sender = "", line, "unknown"
+        msgs.append(_mk(None, sender, "text", content, "ocr", line[:120]))
+    return msgs
 
 
 def parse_txt(text: str, self_name: str, target_name: str) -> list[dict]:
@@ -131,12 +169,20 @@ def main():
     ap.add_argument("--output", default="data/messages.json")
     ap.add_argument("--self", default="我", help="自己的显示名")
     ap.add_argument("--target", default="对方", help="对方的显示名")
+    ap.add_argument("--ocr-backend", default="auto", help="OCR 后端：auto/darwin_vision/tesseract")
     args = ap.parse_args()
 
     all_msgs = []
     for path in args.input:
         ext = os.path.splitext(path)[1].lower()
-        if ext == ".json":
+        if ext in IMAGE_EXTENSIONS:
+            # 截图 → OCR → 按「名字：内容」解析（无时间戳，说话人识别交给 LLM）
+            text = ocr.ocr_image(path, args.ocr_backend)
+            msgs = parse_ocr_text(text, args.self, args.target)
+            for m in msgs:
+                m["source_file"] = path
+            print(f"  OCR: {path} → {len(msgs)} 行文本")
+        elif ext == ".json":
             msgs = parse_json(path)
         elif ext == ".csv":
             msgs = parse_csv(path)
