@@ -28,6 +28,10 @@ def _count_utf8_len(s: str) -> int:
 
 
 def compute(messages: list[dict]) -> dict:
+    return _compute(messages)
+
+
+def _compute(messages: list[dict]) -> dict:
     if not messages:
         return {"message_count": 0}
 
@@ -114,7 +118,38 @@ def compute(messages: list[dict]) -> dict:
         "breaks": breaks,
         "avg_text_length": text_avg,
         "non_text_count": dict(nontext),
+        "recent_windows": _recent_windows(messages),
     }
+
+
+def _recent_windows(messages: list[dict]) -> dict:
+    """最近 7 天 / 30 天窗口对比（供进度追踪）。"""
+    if not messages:
+        return {}
+    last_ts = max(m["timestamp"] for m in messages)
+    out = {}
+    for days in (7, 30):
+        cutoff = last_ts - days * 86400
+        win = [m for m in messages if m["timestamp"] >= cutoff]
+        by_sender = collections.Counter(m["sender"] for m in win)
+        night = sum(1 for m in win if int(m["datetime"][11:13]) >= 22 or int(m["datetime"][11:13]) < 6)
+        nontext = sum(1 for m in win if m["message_type"] != "text")
+        # 窗口内谁开启话题
+        init = collections.Counter()
+        prev = None
+        for m in win:
+            if prev is None or (m["timestamp"] - prev) > INITIATE_GAP_HOURS * 3600:
+                init[m["sender"]] += 1
+            prev = m["timestamp"]
+        out[f"recent_{days}d"] = {
+            "message_count": len(win),
+            "messages_per_day": round(len(win) / days, 1),
+            "by_sender": dict(by_sender),
+            "topic_initiations": dict(init),
+            "night_count": night,
+            "non_text_ratio": round(nontext / len(win), 3) if win else 0,
+        }
+    return out
 
 
 def main():

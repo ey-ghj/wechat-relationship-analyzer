@@ -1,0 +1,10 @@
+{
+  "stage": {"name": "互相了解阶段", "confidence": "中", "basis": "频繁询问对方经历和三观，如「你喜欢…」「你觉得…」"},
+  "new_events": [
+    {"type": "首次邀约", "datetime": "2026-11-03 19:58", "evidence": "我：那周三", "analysis": "初步约饭意向", "outcome": "待确认"}
+  ],
+  "new_actions": [
+    {"date": "2026-11-16", "action": "主动分享日常生活照片", "result": "对方积极回应", "note": ""}
+  ],
+  "style": {"tone_notes": "语气轻松、多用语气词、常发 emoji"}
+}
