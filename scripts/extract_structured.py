@@ -36,11 +36,19 @@ def resolve_wcdb_dir(args, cfg) -> str:
 
 
 def import_export_chat(wcdb_dir: str):
-    """把 wcdb-key-tool 目录加入 sys.path，复用 export_chat.py 的解析函数。"""
-    if wcdb_dir not in sys.path:
-        sys.path.insert(0, wcdb_dir)
-    import export_chat as ec  # noqa: F401
-    return ec
+    """复用 export_chat.py 的解析函数。
+
+    优先用本技能 scripts/ 目录里自带的 export_chat.py（开箱即用）；
+    若不存在，则回退到 wcdb_tool_dir 里的版本（向后兼容）。
+    """
+    try:
+        import export_chat as ec  # noqa: F401
+        return ec
+    except ImportError:
+        if wcdb_dir and wcdb_dir not in sys.path:
+            sys.path.insert(0, wcdb_dir)
+        import export_chat as ec  # noqa: F401
+        return ec
 
 
 MESSAGE_DB_NAMES = ["message_0.db", "message_1.db", "message_2.db"]

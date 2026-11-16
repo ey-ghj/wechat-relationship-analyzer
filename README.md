@@ -68,7 +68,7 @@ python3 scripts/statistics.py --input data/messages.json --output data/stats.jso
 
 - Python 3.10+
 - 仅从数据库提取时需要 `zstandard`（`pip install zstandard`）
-- 仅从数据库提取时，`extract_structured.py` 会 import 本地工作目录里的 `export_chat.py`（消息解析脚本，与解密后的明文库同目录，路径由 config 的 `wcdb_tool_dir` 指定）
+- 消息解析脚本 `export_chat.py` 已随本技能打包在 `scripts/` 目录，`extract_structured.py` 会自动复用（开箱即用）
 
 ## 数据隐私
 
