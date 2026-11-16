@@ -42,7 +42,7 @@ wechat-relationship-analyzer/
 ### 前提
 
 本技能只做「分析层」。要从微信数据库提取，需要先用
-[`wcdb-key-tool`](https://github.com/)（或任意微信解密工具）把聊天记录解密为明文 SQLite。
+[`wcdb-key-tool`](https://github.com/TANGandXUE/wcdb-key-tool)（或任意微信解密工具）把聊天记录解密为明文 SQLite。
 如果你已经有导出的 TXT/CSV/JSON 文件，可跳过这一步，直接用 `parse_import.py`。
 
 ### 1. 配置
@@ -68,7 +68,7 @@ python3 scripts/statistics.py --input data/messages.json --output data/stats.jso
 
 - Python 3.10+
 - 仅从数据库提取时需要 `zstandard`（`pip install zstandard`）
-- 仅从数据库提取时需要 `wcdb-key-tool` 目录（复用其 `export_chat.py` 解析逻辑）
+- 仅从数据库提取时，`extract_structured.py` 会 import 本地工作目录里的 `export_chat.py`（消息解析脚本，与解密后的明文库同目录，路径由 config 的 `wcdb_tool_dir` 指定）
 
 ## 数据隐私
 
