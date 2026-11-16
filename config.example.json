@@ -1,0 +1,8 @@
+{
+  "wcdb_tool_dir": "/absolute/path/to/wcdb-key-tool",
+  "decrypted_subdir": "decrypted",
+  "self_username": "wxid_SELF_ACCOUNT",
+  "self_display_name": "我",
+  "target_username": "wxid_TARGET_CONTACT",
+  "target_display_name": "对方昵称"
+}

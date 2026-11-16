@@ -1,0 +1,22 @@
+# 隐私数据（聊天记录、密钥、本地配置），绝不提交
+data/
+config.json
+*.db
+*.sqlite
+
+# 密钥文件
+*_key*.json
+all_keys*.json
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# 系统
+.DS_Store
+
+# 打包产物
+*.zip
+dist/
