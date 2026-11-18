@@ -36,19 +36,16 @@ def resolve_wcdb_dir(args, cfg) -> str:
 
 
 def import_export_chat(wcdb_dir: str):
-    """复用 export_chat.py 的解析函数。
-
-    优先用本技能 scripts/ 目录里自带的 export_chat.py（开箱即用）；
-    若不存在，则回退到 wcdb_tool_dir 里的版本（向后兼容）。
-    """
+    """复用 wcdb-key-tool/export_chat.py 的解析函数（唯一来源，不在本技能内另存副本）。"""
+    if not wcdb_dir or not os.path.exists(os.path.join(wcdb_dir, "export_chat.py")):
+        sys.exit(f"在 {wcdb_dir} 找不到 export_chat.py（请用 --wcdb-dir 指向 wcdb-key-tool）")
+    if wcdb_dir not in sys.path:
+        sys.path.insert(0, wcdb_dir)
     try:
         import export_chat as ec  # noqa: F401
-        return ec
-    except ImportError:
-        if wcdb_dir and wcdb_dir not in sys.path:
-            sys.path.insert(0, wcdb_dir)
-        import export_chat as ec  # noqa: F401
-        return ec
+    except ImportError as e:
+        sys.exit(f"导入 export_chat 失败：{e}（缺依赖时先 pip install -r {wcdb_dir}/requirements.txt）")
+    return ec
 
 
 MESSAGE_DB_NAMES = ["message_0.db", "message_1.db", "message_2.db"]

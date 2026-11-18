@@ -36,7 +36,6 @@ wechat-relationship-analyzer/
 ├── config.example.json            # 配置模板（复制为 config.json 使用）
 ├── scripts/
 │   ├── extract_structured.py      # 解密库 → 结构化 JSON
-│   ├── export_chat.py             # 消息解析（zstd/引用/链接/撤回，随包自带）
 │   ├── parse_import.py            # TXT/CSV/JSON/HTML/截图 OCR → 结构化 JSON
 │   ├── ocr.py                     # OCR 统一接口（macOS Vision / 其他平台 Tesseract）
 │   ├── statistics.py              # 客观统计（含 7/30 天窗口）
@@ -98,7 +97,7 @@ python3 scripts/profile.py init --config config.json --stats data/stats.json
 - OCR（可选）：
   - macOS：系统 Vision 框架（无需额外安装，需 Xcode Command Line Tools）
   - 其他平台：Tesseract（`brew install tesseract tesseract-lang` 或对应包管理器）
-- 消息解析脚本 `export_chat.py` 已随本技能打包在 `scripts/` 目录，开箱即用
+- 消息解析复用 [`wcdb-key-tool`](https://github.com/ey-ghj/wcdb-key-tool) 的 `export_chat.py`（唯一来源，本技能不另存副本），用 `--wcdb-dir` 或 config 指定目录
 
 ## 数据隐私与安全
 
