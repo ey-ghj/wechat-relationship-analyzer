@@ -1,3 +1,6 @@
+> ⚠️ **已暂停（2026-11-18）**：本工具不再使用，不要按本文件执行任何步骤，也不要读写 `data/profile.json`。
+> 聊天数据与事实时间线见私有仓库 `ey-ghj/love-data`（只读，先看其 README）；AI 的分析结论各自存到 `默认项目/ai-notes/<AI名>/`。
+
 # WeChat Relationship Analyzer
 
 > **「别失忆、别脑补、别哄你。」**
